@@ -7,12 +7,22 @@ const cors        = require('cors');
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
+const helmet             = require('helmet');
 
 const app = express();
-
+app.use((_, res, next) => {
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  next();
+});
 app.use('/public', express.static(process.cwd() + '/public'));
 
-app.use(cors({origin: '*'})); //For FCC testing purposes only
+app.use(cors({origin: '*' })); //For FCC testing purposes only
+
+app.use(helmet({
+  frameguard: {action: 'same-origin'},
+  referrerPolicy: {policy: 'same-origin'},
+  dnsPrefetchControl: true 
+}));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
